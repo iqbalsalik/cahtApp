@@ -16,7 +16,7 @@ exports.postUser = async (req,res)=>{
         }})
 
         if(user){
-            return res.status(500).json("User Already Exist!!")
+            return res.status(409).json("User Already Exist!! Please login.")
         }
 
         bcrypt.hash(password,10,async (err,hashedPass)=>{
@@ -29,7 +29,7 @@ exports.postUser = async (req,res)=>{
                 phone: phone,
                 password: hashedPass
             })
-            res.status(201).json("Successfully signedUp")
+            res.status(201).json("Successfully signed Up")
         })
     }catch(err){
         res.status(500).json("Something Went Wrong!!")

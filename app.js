@@ -1,9 +1,14 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const sequelize = require("./Utils/database")
+const sequelize = require("./Utils/database");
+const cors = require("cors");
 
 const app = express();
 
+app.use(cors({
+    origin:"*",
+    methods:["GET"]
+}))
 app.use(express.static("Public"));
 app.use(bodyParser.json())
 
