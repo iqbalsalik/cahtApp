@@ -4,12 +4,10 @@ const path = require("path");
 
 const router = express.Router();
 
-router.get("/login",(req,res)=>{
-    res.sendFile(path.join(__dirname,"..","Views","login.html"))
-})
+const loginController = require("../Controller/login")
 
-router.post("/login",(req,res)=>{
-    console.log(req.body)
-})
+router.get("/login",loginController.getLoginPage)
+
+router.post("/login",loginController.userLogin)
 
 module.exports = router;

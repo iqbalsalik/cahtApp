@@ -5,10 +5,10 @@ const cors = require("cors");
 
 const app = express();
 
-// app.use(cors({
-//     origin:"*",
-//     methods:["GET"]
-// }))
+app.use(cors({
+    origin:"*",
+    methods:["GET"]
+}))
 app.use(express.static("Public"));
 app.use(bodyParser.json())
 

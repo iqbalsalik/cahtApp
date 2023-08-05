@@ -11,7 +11,8 @@ submit.addEventListener("click", async (e) => {
             password: userPass.value
         }
         const response = await axios.post("http://localhost:3000/login", userDetails);
-        alert(response.data)
+        alert(response.data.message)
+        localStorage.setItem("token",response.data.token);
         userEmail.value = '';
         userPass.value = '';
     } catch (err) {
