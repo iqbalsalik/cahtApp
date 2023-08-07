@@ -4,3 +4,17 @@ body{
 .container{
     width: 45%;
 }
+
+#inputMessage{
+    background-color:#004a0252;
+    width: 70%;
+    border: none;
+    border-radius: 7px;
+}
+
+#sendMessage{
+    border: none;
+    border-radius: 20px;
+    background-color: #20cd20;
+    color: white;
+}
