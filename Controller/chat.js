@@ -1,5 +1,8 @@
 const path = require("path")
 
+const sequelize = require("../Utils/database");
+const Sequelize = require("sequelize");
+
 const Message = require("../Models/message");
 const UserDetail = require("../Models/userDetails");
 
@@ -9,8 +12,15 @@ exports.getChatPage = (req,res)=>{
 
 exports.getAllMessages = async (req,res)=>{
     try{
+        const id = req.query.id;
         const messageArray = []
-        const messages = await Message.findAll();
+        const messages = await Message.findAll({
+            where: {
+              id: {
+                [Sequelize.Op.gt]: id,
+              },
+            },
+          });
         for(let i =0; i<messages.length; i++){
            let userName;
            if(messages[i].userId == req.user.id){
@@ -35,7 +45,8 @@ exports.getAllMessages = async (req,res)=>{
 exports.postMessage = async (req,res)=>{
     try{
        const postedMessage =  await req.user.createMessage({message:req.body.message});
-       res.status(201).json(postedMessage);
+    //    const name = req.user.name;
+       res.status(201).json({postedMessage,name:"you"});
     }catch(err){
         console.log(err)
     }
