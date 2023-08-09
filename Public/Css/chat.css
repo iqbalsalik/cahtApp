@@ -1,5 +1,7 @@
 body{
     background-color: #004a0252;
+    margin: 0;
+    padding: 0;
 }
 .container{
     width: 45%;
@@ -17,4 +19,64 @@ body{
     border-radius: 20px;
     background-color: #20cd20;
     color: white;
+}
+
+#leftSegment{
+    position: absolute;
+    top: 22%;
+    left: 80%;
+    height: 100%;
+    width: auto;
+}
+
+#rightSegment{
+    position: absolute;
+    top: 3%;
+    left: 1%;
+    height: 100%;
+    width: auto;
+}
+
+.list-group-item{
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+@media (max-width: 670px) {
+    #createGroup{
+        width: 34%;
+        text-wrap: wrap;
+    }
+
+    #groupMemberHeading{
+        width: 34%;
+        text-wrap:wrap;
+    }
+
+    #memberList{
+        width: 41%;
+        text-wrap: wrap;
+    }
+
+    #lineRight{
+        margin-right: 52%;
+    }
+
+    #rightSegment{
+        position: absolute;
+        top: 0%;
+        left: 1%;
+        height: 100%;
+        width: auto;
+    }
+
+    #leftSegment {
+        position: absolute;
+        top: 17%;
+        left: 72%;
+        height: 100%;
+        width: auto;
+        margin: 0;
+    }
 }

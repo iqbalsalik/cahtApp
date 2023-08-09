@@ -1,0 +1,27 @@
+body{
+    background-color: #004a0252;
+}
+.container{
+    width: 45%;
+}
+
+#addMember{
+    font-size: larger;
+    font-weight: bolder;
+    border-radius: 65px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+#leftSegment{
+    position: absolute;
+    top: 22%;
+    left: 80%;
+    border: 2px solid;
+    height: 100%;
+    width: auto;
+}
+
+.list-group-item{
+    background-color: #004a0252;
+}

@@ -13,12 +13,14 @@ exports.getChatPage = (req,res)=>{
 exports.getAllMessages = async (req,res)=>{
     try{
         const id = req.query.id;
+        const groupId = req.params.groupId;
         const messageArray = []
         const messages = await Message.findAll({
             where: {
               id: {
                 [Sequelize.Op.gt]: id,
               },
+              groupId: groupId
             },
           });
         for(let i =0; i<messages.length; i++){
@@ -44,8 +46,13 @@ exports.getAllMessages = async (req,res)=>{
 
 exports.postMessage = async (req,res)=>{
     try{
-       const postedMessage =  await req.user.createMessage({message:req.body.message});
-    //    const name = req.user.name;
+        console.log(req.body)
+        const {message,groupId} = req.body
+       const postedMessage = await Message.create({
+        message: message,
+        userId: req.user.id,
+        groupId: groupId
+       })
        res.status(201).json({postedMessage,name:"you"});
     }catch(err){
         console.log(err)

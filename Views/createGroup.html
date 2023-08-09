@@ -9,34 +9,41 @@
     <!-- BOOTSTRAP CSS LINK -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="Css/chat.css">
+    <link rel="stylesheet" href="/Css/Group.css">
+    <!-- BOOTSTRAP ICON LIBRARY -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
 </head>
 
 <body>
-    <div class="container" id="rightSegment">
-        <button class="btn btn-primary my-3" id="createGroup">Create New Group</button>
-        <h4 id="groupMemberHeading">Group Members</h4>
-        <hr id="lineRight">
-        <ul class="list-group" id="memberList">
-        </ul>
-    </div>
+    <div class="container my-5">
+        <!-- FORM FOR CREATING GROUP -->
+        <form>
+           <!-- NAME OF THE GROUP-->
+           <div class="form-group">
+               <label for="groupName">groupName</label>
+               <input type="text" class="form-control" id="groupName" aria-describedby="nameHelp"
+                   placeholder="Enter Group name">
+   
+               <!-- EMAIL -->
+               <div class="form-group">
+                   <label for="memberEmail">Add Members</label>
+                   <input type="email" class="form-control" id="memberEmail" aria-describedby="emailHelp"
+                       placeholder="Enter email">
+                       <button class="btn btn-primary" id="addMember">
+                        <i class="bi bi-plus"></i> 
+                    </button>
+            
+               </div>
+   
+               <!-- SUBMIT BUTTON-->
+               <button type="submit" class="btn btn-dark" id="groupSubmit">Create Group</button>
+       </form>
+      </div>
 
-    <div class="container" id="leftSegment">
-        <h4>Your Groups</h4>
+      <div class="container" id="leftSegment">
+        <h3>Group Members</h3>
         <hr>
         <ul class="list-group" id="listGroup"></ul>
-    </div>
-
-
-    <div class="container my-5" id="chatContainer">
-        <div id="groupName">
-            <h3 class="my-3 text-center">Select a group to see messages</h3>
-        </div>
-        <div id="messages"></div>
-        <div class="text-center my-2">
-            <input type="text" id="inputMessage" placeholder="Type Message">
-            <button id="sendMessage">Send</button>
-        </div>
     </div>
 
     <!-- BOOTSTRAP JS LINK -->
@@ -50,7 +57,7 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
     <!-- CUSOTUM JS -->
-    <script src="chat.js"></script>
+    <script src="group.js"></script>
     <!-- AXIOS LINK -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
