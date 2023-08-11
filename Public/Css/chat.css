@@ -37,10 +37,22 @@ body{
     width: auto;
 }
 
+#addMember{
+    font-size: larger;
+    font-weight: bolder;
+    border-radius: 65px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
 .list-group-item{
     background: none;
     border: none;
     cursor: pointer;
+}
+
+#editGroupContainer{
+    display: none;
 }
 
 @media (max-width: 670px) {

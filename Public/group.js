@@ -32,9 +32,11 @@ submit.addEventListener("click", async (e)=>{
                 "authorization": token
             }
         })
+        alert("Group Successfully Created")
         window.location.href = "/chat"
     }catch(err){
-        console.log(err)
+        alert(err.response.data);
+        grupName.value = "";
     }
 })
 

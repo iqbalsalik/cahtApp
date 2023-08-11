@@ -24,13 +24,8 @@ exports.getAllMessages = async (req,res)=>{
             },
           });
         for(let i =0; i<messages.length; i++){
-           let userName;
-           if(messages[i].userId == req.user.id){
-            userName = "You"
-           }else{
             const user = await UserDetail.findByPk(messages[i].userId);
-            userName = user.name
-           }
+            let userName = user.name;
             const userData = {
                 id: messages[i].id,
                 message:messages[i].message,
@@ -46,14 +41,18 @@ exports.getAllMessages = async (req,res)=>{
 
 exports.postMessage = async (req,res)=>{
     try{
-        console.log(req.body)
         const {message,groupId} = req.body
        const postedMessage = await Message.create({
         message: message,
         userId: req.user.id,
         groupId: groupId
        })
-       res.status(201).json({postedMessage,name:"you"});
+       let currentSender= false
+       if(req.user.id == postedMessage.userId){
+        currentSender = true
+       }
+
+       res.status(201).json({postedMessage,name:req.user.name,currentSender});
     }catch(err){
         console.log(err)
     }

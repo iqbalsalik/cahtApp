@@ -11,4 +11,14 @@ router.post("/creategroup",userAuthentication.userAuthentication,groupController
 
 router.get("/getallgroups",userAuthentication.userAuthentication,groupController.getAllGroups);
 
+router.delete("/deletegroup/:id",userAuthentication.userAuthentication,groupController.deleteGroup);
+
+router.delete("/removemember/:id",userAuthentication.userAuthentication,groupController.removeMember);
+
+router.post("/addMember/:id",userAuthentication.userAuthentication,groupController.addMember);
+
+router.delete("/leaveGroup/:id",userAuthentication.userAuthentication,groupController.leaveGroup);
+
+router.post("/makeadmin",userAuthentication.userAuthentication,groupController.makeAdmin)
+
 module.exports = router;
