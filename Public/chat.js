@@ -47,7 +47,7 @@ sendMessage.addEventListener("click", async e => {
         }
         const message = chatBox.value;
         const token = localStorage.getItem("token")
-        const res = await axios.post("http://localhost:3000/messagesent", { message: message, groupId: groupId }, {
+        const res = await axios.post("http://43.205.113.68:3000/messagesent", { message: message, groupId: groupId }, {
             headers: {
                 "authorization": token
             }
@@ -88,7 +88,7 @@ createGroupBtn.addEventListener("click", async (e) => {
 async function removeMember(id) {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.delete(`http://localhost:3000/removemember/${id}`, {
+        const res = await axios.delete(`http://43.205.113.68:3000/removemember/${id}`, {
             headers: {
                 "authorization": token
             }
@@ -104,7 +104,7 @@ async function removeMember(id) {
 async function makeAdmin(adminId,groupId){
     try{
         const token = localStorage.getItem("token");
-       const res =  await axios.post("http://localhost:3000/makeadmin",{
+       const res =  await axios.post("http://43.205.113.68:3000/makeadmin",{
             adminId:adminId,
             groupId: groupId
         },{
@@ -127,7 +127,7 @@ async function makeAdmin(adminId,groupId){
 async function selectedGroup(id, name) {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:3000/memberchat/${id}`, {
+        const res = await axios.get(`http://43.205.113.68:3000/memberchat/${id}`, {
             headers: {
                 "authorization": token
             }
@@ -178,7 +178,7 @@ async function getMessage() {
             } else {
                 id = -1;
             }
-            const res = await axios.get(`http://localhost:3000/getmessages/${groupId}?id=${id}`, {
+            const res = await axios.get(`http://43.205.113.68:3000/getmessages/${groupId}?id=${id}`, {
                 headers: {
                     "authorization": token
                 }
@@ -219,7 +219,7 @@ async function addMember(e, id) {
         e.preventDefault()
         const token = localStorage.getItem("token");
         const memberEmail = document.getElementById("memberEmail").value;
-        const res = await axios.post(`http://localhost:3000/addMember/${id}`, { memberEmail: memberEmail }, {
+        const res = await axios.post(`http://43.205.113.68:3000/addMember/${id}`, { memberEmail: memberEmail }, {
             headers: {
                 "authorization": token
             }
@@ -236,7 +236,7 @@ async function addMember(e, id) {
 async function deleteGroup(id) {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.delete(`http://localhost:3000/deletegroup/${id}`, {
+        const res = await axios.delete(`http://43.205.113.68:3000/deletegroup/${id}`, {
             headers: {
                 "authorization": token
             }
@@ -252,7 +252,7 @@ async function deleteGroup(id) {
 async function getAllGroups(){
     try{
         const token = localStorage.getItem("token");
-        const groups = await axios.get("http://localhost:3000/getallgroups", {
+        const groups = await axios.get("http://43.205.113.68:3000/getallgroups", {
             headers: {
                 "authorization": token
             }
@@ -274,7 +274,7 @@ async function getAllGroups(){
 async function leaveGroup(id) {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.delete(`http://localhost:3000/leaveGroup/${id}`, {
+        const res = await axios.delete(`http://43.205.113.68:3000/leaveGroup/${id}`, {
             headers: {
                 "authorization": token
             }

@@ -1,7 +1,12 @@
+const path = require("path");
+const fs = require("fs");
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const sequelize = require("./Utils/database");
 const cors = require("cors");
+const compression = require("compression");
+const morgan = require("morgan");
 
 const User = require("./Models/userDetails");
 const message = require("./Models/message");
@@ -10,12 +15,16 @@ const UserGroup = require("./Models/userGroup");
 
 const app = express();
 
+const accessLogStream = fs.createWriteStream(path.join(__dirname,"access.log"),{flags:"a"})
+
 app.use(cors({
     origin:"*",
     methods:["GET"]
 }))
 app.use(express.static("Public"));
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(compression());
+app.use(morgan("combined",{ stream: accessLogStream}))
 
 const signUpRoutes = require("./Routes/signUp");
 const loginRoutes = require("./Routes/login");

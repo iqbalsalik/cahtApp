@@ -10,7 +10,7 @@ submit.addEventListener("click", async (e) => {
             email: userEmail.value,
             password: userPass.value
         }
-        const response = await axios.post("http://localhost:3000/login", userDetails);
+        const response = await axios.post("http://43.205.113.68:3000/login", userDetails);
         localStorage.setItem("token",response.data.token);
         window.location.href = "/chat";
     } catch (err) {

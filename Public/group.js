@@ -23,7 +23,7 @@ submit.addEventListener("click", async (e)=>{
         e.preventDefault();
         const nameOfTheGroup = grupName.value;
         const token = localStorage.getItem("token");
-        const res = await axios.post("http://localhost:3000/creategroup",{
+        const res = await axios.post("http://43.205.113.68:3000/creategroup",{
             memberList: grupMemberList,
             grupName:nameOfTheGroup
 
