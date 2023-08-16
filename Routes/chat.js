@@ -8,10 +8,8 @@ const router = express.Router();
 
 router.get("/chat",chatController.getChatPage);
 
-router.post("/messagesent",auth.userAuthentication,chatController.postMessage);
-
 router.get("/getmessages/:groupId",auth.userAuthentication,chatController.getAllMessages);
 
-router.get("/memberchat/:id",auth.userAuthentication,groupController.getAllMembers)
+router.get("/memberchat/:id",auth.userAuthentication,groupController.getAllMembers);
 
 module.exports = router;

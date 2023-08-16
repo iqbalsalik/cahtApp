@@ -4,6 +4,8 @@ const listGroup = document.getElementById("listGroup");
 const submit = document.getElementById("groupSubmit");
 const grupName = document.getElementById("groupName");
 
+
+
 const grupMemberList = [];
 
 addMember.addEventListener("click",(e)=>{
@@ -23,7 +25,7 @@ submit.addEventListener("click", async (e)=>{
         e.preventDefault();
         const nameOfTheGroup = grupName.value;
         const token = localStorage.getItem("token");
-        const res = await axios.post("http://43.205.113.68:3000/creategroup",{
+        const res = await axios.post("http://localhost:3000/creategroup",{
             memberList: grupMemberList,
             grupName:nameOfTheGroup
 

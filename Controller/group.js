@@ -1,5 +1,13 @@
 const path = require("path");
+const express = require("express");
+const http = require("http");
+
+const app = express();
+
+const server = http.createServer(app);
 const sequelize = require("../Utils/database");
+
+const io = require('socket.io')(server)
 
 const Group = require("../Models/group");
 const User = require("../Models/userDetails");
@@ -10,6 +18,8 @@ const Admin = require("../Models/admin");
 exports.getCreateGropuPage = (req,res)=>{
     res.sendFile(path.join(__dirname,"..","Views","createGroup.html"));
 }
+
+
 
 exports.postGroup = async(req,res)=>{
     let t;
@@ -32,6 +42,7 @@ exports.postGroup = async(req,res)=>{
         },{
             transaction: t
         });
+        await group.addUser(req.user,{transaction:t})
         const admin = await Admin.create({
             adminId: req.user.id,
             groupId: group.id
@@ -44,9 +55,6 @@ exports.postGroup = async(req,res)=>{
             },{transaction:t})
             if(user){
                 await group.addUser(user,{transaction:t})
-            }else{
-                await group.addUser(req.user,{transaction:t})
-                return
             }
         }
         t.commit();
@@ -59,37 +67,6 @@ exports.postGroup = async(req,res)=>{
     }catch(err){
         t.rollback()
         console.log(err);
-    }
-}
-
-exports.getAllGroups = async (req,res)=>{
-    try{
-        const user = req.user
-        const groups = await user.getGroups();
-        let groupArray = [];
-        for(let i=0;i<groups.length;i++){
-            let isAdmin = await Admin.findOne({
-                where:{
-                    adminId: user.id,
-                    groupId: groups[i].id
-                }
-            })
-            if(isAdmin){
-                groupArray.push({
-                    group: groups[i],
-                    isAdmin: true
-                })
-            }else{
-                groupArray.push({
-                    group: groups[i],
-                    isAdmin: false
-                })
-            }
-        }
-        res.status(200).json({groupArray,userId:user.id});
-
-    }catch(err){
-        console.log(err)
     }
 }
 
@@ -132,7 +109,6 @@ exports.getAllMembers = async(req,res)=>{
                 userArray.push(userDetails)
             }
         }
-        // res.status(200).json({users,admin})
         res.status(200).json({userArray,admin})
     }catch(err){
         console.log(err);
@@ -155,16 +131,24 @@ exports.deleteGroup = async(req,res)=>{
 exports.removeMember = async (req,res)=>{
 try{
     const id = req.params.id;
-    console.log(id)
+    const groupId = req.query.groupId;
     const user = await GroupJunction.findOne({
         where:{
-            userId: id
+            userId: id,
+            groupId: groupId
         }
     });
 
     if(user){
         await user.destroy()
     };
+    const admin = await Admin.findOne({where:{
+        adminId: id,
+        groupId: groupId
+    }})
+    if(admin){
+        await admin.destroy()
+    }
     res.status(200).json("Successfully Removed")
 
 }catch(err){
@@ -209,7 +193,9 @@ exports.addMember = async(req,res)=>{
 }
 
 exports.leaveGroup = async (req,res)=>{
+    let t;
 try{
+    t =await sequelize.transaction()
     const id = req.params.id;
     const userId = req.user.id;
     const group = await GroupJunction.findOne({
@@ -217,16 +203,27 @@ try{
             groupId: id,
             userId: userId
         }
-    })
+    },{transaction:t})
     if(group){
-        await group.destroy()
+        await group.destroy({transaction:t})
     }else{
         return res.status(404).json("Group Not Found!!")
     }
+    const admin = await Admin.findOne({
+        where:{
+            adminId: userId,
+            groupId: id
+        }
+    },{transaction:t})
+    if(admin){
+        await admin.destroy({transaction:t})
+    }
+    t.commit()
     res.status(200).json("Successfully left the group")
 }catch(err){
     console.log(err)
-    alert(err.response.data)
+    await t.rollback()
+    res.status(400).json("Something Went Wrong!")
 }
 }
 

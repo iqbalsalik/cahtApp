@@ -1,3 +1,12 @@
+const token = localStorage.getItem("token")
+let i = 0;
+
+const socket = io("http://localhost:5000", {
+    extraHeaders: {
+        Authorization: token
+    }
+})
+
 const chatContainer = document.getElementById("chatContainer");
 const messageContainer = document.getElementById("messages");
 const chatBox = document.getElementById("inputMessage");
@@ -13,9 +22,53 @@ const memberEmail = document.getElementById("memberEmail");
 const listGroupNewlyAdded = document.getElementById("listGroupNewlyAdded");
 const editMember = document.getElementById("editMember");
 
-let i = 0;
+async function getAllGroups(data) {
+    try {
+        listGroup.innerHTML = ''
+        for (let j = 0; j < data.length; j++) {
+            if (data[j].admin) {
+                listGroup.innerHTML += `<li class="list-group-item" id = "${data[j].group.id}" onclick="selectedGroup(${data[j].group.id},'${data[j].group.groupName}',event)">${data[j].group.groupName}  <button class="btn-sm btn-primary" onclick="deleteGroup(${data[j].group.id})">Delete</button>  <button class="btn-sm btn-primary" onclick="addMemberBtn(${data[j].group.id})"><i class="bi bi-plus"></i>  Member</button</li>`
+            } else {
+                listGroup.innerHTML += `<li class="list-group-item" id = "${data[j].group.id}" onclick="selectedGroup(${data[j].group.id},'${data[j].group.groupName}',event)">${data[j].group.groupName} <button class="btn-sm btn-primary" onclick="leaveGroup(${data[j].group.id})">Leave Group</button></li>`
+            }
+        }
 
-window.addEventListener("DOMContentLoaded", getAllGroups)
+    } catch (err) {
+        alert(err.response.data)
+    }
+}
+
+socket.on("leftChat", data => {
+    showMessagesOnScreen(null, data, "Left Chat")
+})
+
+window.addEventListener("DOMContentLoaded", () => {
+    socket.emit("getGroups")
+})
+socket.on("allGroups", data => {
+    getAllGroups(data)
+})
+
+socket.on("messageRecieved", data => {
+    showMessagesOnScreen(data.id, data.name, data.message)
+})
+
+sendMessage.addEventListener("click", (e) => {
+    e.preventDefault();
+    const groupId = groupName.firstChild.id;
+    if (!groupId) {
+        return alert("Select a group first!")
+    }
+    const message = chatBox.value;
+    showMessagesOnScreen(null, "You", message)
+    socket.emit("messageSent", message, groupId);
+    chatBox.value = '';
+})
+
+
+
+
+
 
 function addMemberBtn(id) {
     try {
@@ -34,77 +87,10 @@ function addMemberBtn(id) {
     }
 }
 
-setInterval(() => {
-    getMessage()
-    getAllGroups()
-}, 1000);
-
-sendMessage.addEventListener("click", async e => {
-    try {
-        const groupId = groupName.firstChild.id;
-        if (!groupId) {
-            return alert("Select a group first!")
-        }
-        const message = chatBox.value;
-        const token = localStorage.getItem("token")
-        const res = await axios.post("http://43.205.113.68:3000/messagesent", { message: message, groupId: groupId }, {
-            headers: {
-                "authorization": token
-            }
-        })
-        console.log(res)
-        const messageData = {
-            id: res.data.postedMessage.id,
-            message: res.data.postedMessage.message,
-            name: res.data.name
-        }
-        const localStorageArray = JSON.parse(localStorage.getItem(groupName.firstChild.innerText));
-        if (localStorageArray) {
-            localStorageArray.push(messageData);
-            localStorage.setItem(groupName.firstChild.innerText, JSON.stringify(localStorageArray))
-        } else {
-            const lsMessage = [];
-            lsMessage.push(messageData);
-            localStorage.setItem(groupName.firstChild.innerText, JSON.stringify(lsMessage))
-        }
-        showMessagesOnScreen(res.data.postedMessage.id, res.data.name, res.data.postedMessage.message)
-        chatBox.value = '';
-    } catch (err) {
-        console.log(err)
-    }
-})
-
-createGroupBtn.addEventListener("click", async (e) => {
-    try {
-        e.preventDefault();
-        window.location.href = "/creategroup"
-    } catch (err) {
-        console.log(err)
-    }
-})
-
-//UTIL FUNCTIONS
-
-async function removeMember(id) {
-    try {
-        const token = localStorage.getItem("token");
-        const res = await axios.delete(`http://43.205.113.68:3000/removemember/${id}`, {
-            headers: {
-                "authorization": token
-            }
-        })
-        alert(res.data);
-        const childNode = document.getElementById(id)
-        memeberList.removeChild(childNode)
-    } catch (err) {
-        console.log(err)
-    }
-}
-
 async function makeAdmin(adminId,groupId){
     try{
         const token = localStorage.getItem("token");
-       const res =  await axios.post("http://43.205.113.68:3000/makeadmin",{
+       const res =  await axios.post("http://localhost:3000/makeadmin",{
             adminId:adminId,
             groupId: groupId
         },{
@@ -124,30 +110,40 @@ async function makeAdmin(adminId,groupId){
     }
 }
 
-async function selectedGroup(id, name) {
+socket.on("chatJoined",data=>{
+    showMessagesOnScreen(null,data,"Joined the Chat!!")
+})
+
+
+async function selectedGroup(id, name,e) {
     try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`http://43.205.113.68:3000/memberchat/${id}`, {
-            headers: {
-                "authorization": token
-            }
-        })
-        groupName.innerHTML = `<h2 class="my-3 text-center" id= "${id}">${name}</h2>`;
-        getMessage()
-        memeberList.innerHTML = "";
-        if(res.data.admin){
-            for (let j = 0; j < res.data.userArray.length; j++) {
-                if (!res.data.userArray[j].isAdmin) {
-                    memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.userArray[j].user.id})">remove</button> <button class="btn-sm btn-primary" id="${res.data.userArray[j].user.id}${id}" onclick="makeAdmin(${res.data.userArray[j].user.id},'${id}')">Admin</button></li>`
-                }else{
-                    memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.userArray[j].user.id})">remove</button>`
+        if(e.target.id == id){
+            const token = localStorage.getItem("token");
+            const res = await axios.get(`http://localhost:3000/memberchat/${id}`, {
+                headers: {
+                    "authorization": token
+                }
+            })
+            groupName.innerHTML = `<h2 class="my-3 text-center" id= "${id}">${name}</h2>`;
+            memeberList.innerHTML = "";
+            if (res.data.admin) {
+                for (let j = 0; j < res.data.userArray.length; j++) {
+                    if (!res.data.userArray[j].isAdmin) {
+                        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.userArray[j].user.id},'${id}')">remove</button> <button class="btn-sm btn-primary" id="${res.data.userArray[j].user.id}${id}" onclick="makeAdmin(${res.data.userArray[j].user.id},'${id}')">Admin</button></li>`
+                    } else {
+                        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.userArray[j].user.id})">remove</button>`
+                    }
+                }
+            } else {
+                for (let j = 0; j < res.data.userArray.length; j++) {
+                    memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} </li>`
                 }
             }
-        } else {
-            for (let j = 0; j < res.data.userArray.length; j++) {
-                memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} </li>`
-            }
+            socket.emit("joinRoom", name)
+            messageContainer.innerHTML = '';
+            getMessage()
         }
+       
     } catch (err) {
         console.log(err)
     }
@@ -178,7 +174,7 @@ async function getMessage() {
             } else {
                 id = -1;
             }
-            const res = await axios.get(`http://43.205.113.68:3000/getmessages/${groupId}?id=${id}`, {
+            const res = await axios.get(`http://localhost:3000/getmessages/${groupId}?id=${id}`, {
                 headers: {
                     "authorization": token
                 }
@@ -191,7 +187,6 @@ async function getMessage() {
                 localStorage.setItem(groupName.firstChild.innerText, JSON.stringify(res.data))
             }
             lsArray = JSON.parse(localStorage.getItem(groupName.firstChild.innerText));
-           
             if (lsArray) {
                 if (lsArray.length > 10) {
                     let limitedLsArray = [];
@@ -201,7 +196,6 @@ async function getMessage() {
                     localStorage.setItem(groupName.firstChild.innerText, JSON.stringify(limitedLsArray))
                 }
                 lsArray = JSON.parse(localStorage.getItem(groupName.firstChild.innerText))
-                messageContainer.innerHTML = '';
                 i = 0
                 for (let j = 0; j < lsArray.length; j++) {
                     showMessagesOnScreen(lsArray[j].id, lsArray[j].name, lsArray[j].message);
@@ -214,77 +208,88 @@ async function getMessage() {
     }
 }
 
+
 async function addMember(e, id) {
     try {
         e.preventDefault()
         const token = localStorage.getItem("token");
         const memberEmail = document.getElementById("memberEmail").value;
-        const res = await axios.post(`http://43.205.113.68:3000/addMember/${id}`, { memberEmail: memberEmail }, {
+        const res = await axios.post(`http://localhost:3000/addMember/${id}`, { memberEmail: memberEmail }, {
             headers: {
                 "authorization": token
             }
         })
         alert(res.data.message)
         editMember.innerHTML = "";
-        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.id}">${res.data.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.id})">remove</button> <button class="btn-sm btn-primary" id="${res.data.id}${id}" onclick="makeAdmin(${res.data.id},'${id}')">Admin</button></li>`
-        
+            memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.id}">${res.data.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.id})">remove</button> <button class="btn-sm btn-primary" id="${res.data.id}${id}" onclick="makeAdmin(${res.data.id},'${id}')">Admin</button></li>`
     } catch (err) {
         alert(err.response.data)
+    }
+}
+
+async function removeMember(id,groupId) {
+    try {
+        const token = localStorage.getItem("token");
+        const res = await axios.delete(`http://localhost:3000/removemember/${id}?groupId=${groupId}`, {
+            headers: {
+                "authorization": token
+            }
+        })
+        alert(res.data);
+        const childNode = document.getElementById(id)
+        memeberList.removeChild(childNode)
+    } catch (err) {
+        console.log(err)
     }
 }
 
 async function deleteGroup(id) {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.delete(`http://43.205.113.68:3000/deletegroup/${id}`, {
+        const res = await axios.delete(`http://localhost:3000/deletegroup/${id}`, {
             headers: {
                 "authorization": token
             }
         });
         alert(res.data);
         const childNode = document.getElementById(id)
-        listGroup.removeChild(childNode)
+        listGroup.removeChild(childNode);
+        messageContainer.innerHTML = '';
+        groupName.innerHTML = `<h3 class="my-3 text-center">Select a group to see messages</h3>`;
+        memeberList.innerHTML = "";
+
     } catch (err) {
         console.log(err)
-    }
-}
-
-async function getAllGroups(){
-    try{
-        const token = localStorage.getItem("token");
-        const groups = await axios.get("http://43.205.113.68:3000/getallgroups", {
-            headers: {
-                "authorization": token
-            }
-        })
-        listGroup.innerHTML = ''
-        for (let j = 0; j < groups.data.groupArray.length; j++) {
-            if (groups.data.groupArray[j].isAdmin) {
-                listGroup.innerHTML += `<li class="list-group-item" id = "${groups.data.groupArray[j].group.id}" onclick="selectedGroup(${groups.data.groupArray[j].group.id},'${groups.data.groupArray[j].group.groupName}')">${groups.data.groupArray[j].group.groupName}  <button class="btn-sm btn-primary" onclick="deleteGroup(${groups.data.groupArray[j].group.id})">Delete</button>  <button class="btn-sm btn-primary" onclick="addMemberBtn(${groups.data.groupArray[j].group.id})"><i class="bi bi-plus"></i>  Member</button</li>`
-            } else {
-                listGroup.innerHTML += `<li class="list-group-item" id = "${groups.data.groupArray[j].group.id}" onclick="selectedGroup(${groups.data.groupArray[j].group.id},'${groups.data.groupArray[j].group.groupName}')">${groups.data.groupArray[j].group.groupName} <button class="btn-sm btn-primary" onclick="leaveGroup(${groups.data.groupArray[j].group.id})">Leave Group</button></li>`
-            }
-    
-        }
-    }catch(err){
-        alert(err.response.data)
     }
 }
 
 async function leaveGroup(id) {
     try {
         const token = localStorage.getItem("token");
-        const res = await axios.delete(`http://43.205.113.68:3000/leaveGroup/${id}`, {
+        const res = await axios.delete(`http://localhost:3000/leaveGroup/${id}`, {
             headers: {
                 "authorization": token
             }
         })
-        alert(res.data)
+        
         const childNode = document.getElementById(id);
         listGroup.removeChild(childNode);
         memeberList.innerHTML = "";
+        messageContainer.innerHTML = '';
+        const name = document.getElementById(id);
+        console.log(name)
+        groupName.innerHTML = `<h3 class="my-3 text-center">Select a group to see messages</h3>`
+        alert(res.data)
     } catch (err) {
-        console.log(err)
         alert(err.response.data)
     }
 }
+
+createGroupBtn.addEventListener("click", async (e) => {
+    try {
+        e.preventDefault();
+        window.location.href = "/creategroup"
+    } catch (err) {
+        console.log(err)
+    }
+})

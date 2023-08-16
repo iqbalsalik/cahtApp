@@ -13,7 +13,7 @@ submit.addEventListener("click", async (e) => {
             phone: userPhone.value,
             password: userPass.value
         }
-        const response = await axios.post("http://43.205.113.68:3000/signUp", userDetails);
+        const response = await axios.post("http://localhost:3000/signUp", userDetails);
         window.location.href = "/login"
     } catch (err) {
         alert(err.response.data);
