@@ -1,6 +1,5 @@
 const express = require("express");
 require("dotenv").config();
-const jwt = require('jsonwebtoken');
 const bodyParser = require("body-parser");
 const sequelize = require("./Utils/database");
 const cors = require("cors");
@@ -15,8 +14,7 @@ const path = require("path")
 const accessLogStream = fs.createWriteStream(path.join(__dirname,"access.log"),{flags:"a"})
 
 app.use(cors({
-    origin:"*",
-    methods:["GET"]
+    origin:"*"
 }))
 app.use(express.static("Public"));
 app.use(bodyParser.json());
@@ -27,7 +25,6 @@ const User = require("./Models/userDetails");
 const message = require("./Models/message");
 const Group = require("./Models/group");
 const UserGroup = require("./Models/userGroup");
-const Admin = require("./Models/admin")
 
 const socketApp = require("./Socket/socket");
 

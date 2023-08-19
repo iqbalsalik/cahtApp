@@ -1,3 +1,17 @@
+const messageContainer = document.getElementById("messages");
+const chatBox = document.getElementById("inputMessage");
+const sendMessage = document.getElementById("sendMessage");
+const createGroupBtn = document.getElementById("createGroup");
+const listGroup = document.getElementById("listGroup");
+const memeberList = document.getElementById("memberList");
+const groupName = document.getElementById("groupName");
+const leftSegment = document.getElementById("leftSegment");
+const memberEmail = document.getElementById("memberEmail");
+const editMember = document.getElementById("editMember");
+const imageInput = document.getElementById('imageInput');
+const selectedImage = document.getElementById('selectedImage');
+const sendImageBtn = document.getElementById('sendImageBtn');
+
 const token = localStorage.getItem("token")
 let i = 0;
 
@@ -6,21 +20,6 @@ const socket = io("http://localhost:5000", {
         Authorization: token
     }
 })
-
-const chatContainer = document.getElementById("chatContainer");
-const messageContainer = document.getElementById("messages");
-const chatBox = document.getElementById("inputMessage");
-const sendMessage = document.getElementById("sendMessage");
-const createGroupBtn = document.getElementById("createGroup");
-const listGroup = document.getElementById("listGroup");
-const memeberList = document.getElementById("memberList");
-const groupName = document.getElementById("groupName");
-const editGroupContainer = document.getElementById("editGroupContainer");
-const leftSegment = document.getElementById("leftSegment");
-const submit = document.getElementById("groupSubmit");
-const memberEmail = document.getElementById("memberEmail");
-const listGroupNewlyAdded = document.getElementById("listGroupNewlyAdded");
-const editMember = document.getElementById("editMember");
 
 async function getAllGroups(data) {
     try {
@@ -32,14 +31,13 @@ async function getAllGroups(data) {
                 listGroup.innerHTML += `<li class="list-group-item" id = "${data[j].group.id}" onclick="selectedGroup(${data[j].group.id},'${data[j].group.groupName}',event)">${data[j].group.groupName} <button class="btn-sm btn-primary" onclick="leaveGroup(${data[j].group.id})">Leave Group</button></li>`
             }
         }
-
     } catch (err) {
         alert(err.response.data)
     }
 }
 
 socket.on("leftChat", data => {
-    showMessagesOnScreen(null, data, "Left Chat")
+    showMessagesOnScreen(null, data, "Left Chat", null)
 })
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -50,7 +48,7 @@ socket.on("allGroups", data => {
 })
 
 socket.on("messageRecieved", data => {
-    showMessagesOnScreen(data.id, data.name, data.message)
+    showMessagesOnScreen(data.id, data.name, data.message, null)
 })
 
 sendMessage.addEventListener("click", (e) => {
@@ -60,15 +58,10 @@ sendMessage.addEventListener("click", (e) => {
         return alert("Select a group first!")
     }
     const message = chatBox.value;
-    showMessagesOnScreen(null, "You", message)
+    showMessagesOnScreen(null, "You", message, null)
     socket.emit("messageSent", message, groupId);
     chatBox.value = '';
 })
-
-
-
-
-
 
 function addMemberBtn(id) {
     try {
@@ -87,37 +80,35 @@ function addMemberBtn(id) {
     }
 }
 
-async function makeAdmin(adminId,groupId){
-    try{
+async function makeAdmin(adminId, groupId) {
+    try {
         const token = localStorage.getItem("token");
-       const res =  await axios.post("http://localhost:3000/makeadmin",{
-            adminId:adminId,
+        const res = await axios.post("http://localhost:3000/makeadmin", {
+            adminId: adminId,
             groupId: groupId
-        },{
-            headers:{
+        }, {
+            headers: {
                 "authorization": token
             }
         })
-        console.log(res)
         alert(res.data);
         const childElement = document.getElementById(`${adminId}${groupId}`);
         const parentElement = childElement.parentNode;
         parentElement.removeChild(childElement)
-
-    }catch(err){
+    } catch (err) {
         alert(err.response.data)
         console.log(err)
     }
 }
 
-socket.on("chatJoined",data=>{
-    showMessagesOnScreen(null,data,"Joined the Chat!!")
+socket.on("chatJoined", data => {
+    showMessagesOnScreen(null, data, "Joined the Chat!!", null)
 })
 
 
-async function selectedGroup(id, name,e) {
+async function selectedGroup(id, name, e) {
     try {
-        if(e.target.id == id){
+        if (e.target.id == id) {
             const token = localStorage.getItem("token");
             const res = await axios.get(`http://localhost:3000/memberchat/${id}`, {
                 headers: {
@@ -139,27 +130,49 @@ async function selectedGroup(id, name,e) {
                     memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} </li>`
                 }
             }
-            socket.emit("joinRoom", name)
+            socket.emit("joinRoom", name, id)
             messageContainer.innerHTML = '';
             getMessage()
         }
-       
     } catch (err) {
         console.log(err)
     }
 }
 
-function showMessagesOnScreen(id, name, message) {
-    if (i % 2 === 0) {
-        messageContainer.innerHTML += `<div id= ${id} class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#d7ffd7; border-radius:23px;">
-                        <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">  <span style="color: #39420c; font-weight: bold;">${name}:</span>  ${message} </div>
-                    </div>`
+function scrollToBottom() {
+    messageContainer.scrollTop = messageContainer.scrollHeight;
+  }
+
+function showMessagesOnScreen(id, name, message, fileUrl) {
+    if (fileUrl) {
+        if (i % 2 === 0) {
+            messageContainer.innerHTML += `<div class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#d7ffd7; border-radius:23px;">
+            <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">
+            <span style="color: #39420c; font-weight: bold;">${name}:</span>
+            <img src="${fileUrl}" alt="Image" style = "width: 20rem; margin: 10px; border-radius: 21px;">
+            </div>
+            </div>`
+        } else {
+            messageContainer.innerHTML += `<div class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#e3e1e1; border-radius:23px;">
+            <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">
+             <span style="color: #39420c; font-weight: bold;">${name}:</span>
+            <img src="${fileUrl}" alt="Image" style = "width: 20rem; margin: 10px; border-radius: 21px;">
+            </div>
+            </div>`
+        }
     } else {
-        messageContainer.innerHTML += `<div id= ${id} class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#e3e1e1; border-radius:23px;">
-                    <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;"> <span style="color: #39420c; font-weight: bold;">${name}:</span>  ${message}</div>
-                </div>`
+        if (i % 2 === 0) {
+            messageContainer.innerHTML += `<div id= ${id} class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#d7ffd7; border-radius:23px;">
+                            <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">  <span style="color: #39420c; font-weight: bold;">${name}:</span>  ${message} </div>
+                        </div>`
+        } else {
+            messageContainer.innerHTML += `<div id= ${id} class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#e3e1e1; border-radius:23px;">
+                        <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;"> <span style="color: #39420c; font-weight: bold;">${name}:</span>  ${message}</div>
+                    </div>`
+        }
     }
     i++
+    scrollToBottom()
 }
 
 async function getMessage() {
@@ -198,11 +211,10 @@ async function getMessage() {
                 lsArray = JSON.parse(localStorage.getItem(groupName.firstChild.innerText))
                 i = 0
                 for (let j = 0; j < lsArray.length; j++) {
-                    showMessagesOnScreen(lsArray[j].id, lsArray[j].name, lsArray[j].message);
+                    showMessagesOnScreen(lsArray[j].id, lsArray[j].name, lsArray[j].message, lsArray[j].fileUrl);
                 }
             }
         }
-
     } catch (err) {
         console.log(err)
     }
@@ -221,13 +233,13 @@ async function addMember(e, id) {
         })
         alert(res.data.message)
         editMember.innerHTML = "";
-            memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.id}">${res.data.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.id})">remove</button> <button class="btn-sm btn-primary" id="${res.data.id}${id}" onclick="makeAdmin(${res.data.id},'${id}')">Admin</button></li>`
+        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.id}">${res.data.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.id})">remove</button> <button class="btn-sm btn-primary" id="${res.data.id}${id}" onclick="makeAdmin(${res.data.id},'${id}')">Admin</button></li>`
     } catch (err) {
         alert(err.response.data)
     }
 }
 
-async function removeMember(id,groupId) {
+async function removeMember(id, groupId) {
     try {
         const token = localStorage.getItem("token");
         const res = await axios.delete(`http://localhost:3000/removemember/${id}?groupId=${groupId}`, {
@@ -257,7 +269,6 @@ async function deleteGroup(id) {
         messageContainer.innerHTML = '';
         groupName.innerHTML = `<h3 class="my-3 text-center">Select a group to see messages</h3>`;
         memeberList.innerHTML = "";
-
     } catch (err) {
         console.log(err)
     }
@@ -271,7 +282,6 @@ async function leaveGroup(id) {
                 "authorization": token
             }
         })
-        
         const childNode = document.getElementById(id);
         listGroup.removeChild(childNode);
         memeberList.innerHTML = "";
@@ -292,4 +302,47 @@ createGroupBtn.addEventListener("click", async (e) => {
     } catch (err) {
         console.log(err)
     }
+})
+
+imageInput.addEventListener('change', function (e) {
+    const file = e.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            selectedImage.src = e.target.result;
+            selectedImage.style.display = 'block';
+        };
+
+        reader.readAsDataURL(file);
+    }
+});
+
+sendImageBtn.addEventListener('click', function () {
+    const groupId = groupName.firstChild.id;
+    if (!groupId) {
+        return alert("Select a group first!")
+    }
+
+    const file = imageInput.files[0];
+
+    if (!file) {
+        alert("Please select a file.");
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const fileData = event.target.result;
+        socket.emit("uploadFile", { fileName: file.name, fileData });
+    };
+    reader.readAsArrayBuffer(file);
+    showMessagesOnScreen(null, "You", null, selectedImage.src)
+    selectedImage.src = '#';
+    selectedImage.style.display = 'none';
+    imageInput.value = '';
+});
+
+socket.on("fileUploaded", fileUrl => {
+    showMessagesOnScreen(null, fileUrl.name, null, fileUrl.fileUrl)
 })

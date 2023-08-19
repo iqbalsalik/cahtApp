@@ -1,16 +1,18 @@
-const io = require("socket.io")(5000, {
-    cors: {
-        origin: ["http://127.0.0.1:5501","http://localhost:3000"],
-    },
-});
-
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+const AWS = require("aws-sdk");
+require("dotenv").config()
 
 const User = require("../Models/userDetails");
 const message = require("../Models/message");
 const Group = require("../Models/group");
 const UserGroup = require("../Models/userGroup");
-const Admin = require("../Models/admin")
+const Admin = require("../Models/admin");
+
+const io = require("socket.io")(5000, {
+    cors: {
+        origin: ["http://127.0.0.1:5501","http://localhost:3000"],
+    },
+});
 
 function socketApp (){
     return io.on("connection", socket => {
@@ -72,21 +74,68 @@ function socketApp (){
                 }
             })
     
-            socket.on("joinRoom", group=>{
+            socket.on("joinRoom", (group,groupId)=>{
                 const previousGroup = user.group;
                 if (previousGroup) {
                     socket.leave(previousGroup);
+                    user.groupId = ''
                     socket.to(previousGroup).emit("leftChat",user.name)
                 }
                 user.group = group;
+                user.groupId = groupId
                 socket.join(group);
                 socket.to(group).emit("chatJoined",user.name)
             })
+
+            socket.on("uploadFile", async ({ fileName, fileData }) => {
+                const data = Buffer.from(fileData);
+                const name = `${user.name}/${fileName}`
+               const fileUrl = await uploadToAws(data,name)
+                await message.create({
+                    fileUrl: fileUrl,
+                    userId: user.userId,
+                    groupId: user.groupId
+                })
+               socket.to(user.group).emit("fileUploaded",{fileUrl,name:user.name})
+            });
         }else{
             socket.emit("error","Not Authorized");
             socket.disconnect(true)
         }
     })
 }
+
+async function uploadToAws (data,name){
+    try{
+        const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
+        const IAM_USER_KEY = process.env.AWS_USER_KEY;
+        const IAM_USER_SECRET = process.env.AWS_USER_SECRET;
+    
+        let s2Bucket = new AWS.S3({
+            accessKeyId:IAM_USER_KEY,
+            secretAccessKey:IAM_USER_SECRET,
+            Bucket:BUCKET_NAME
+        })
+    
+        var params = {
+            Bucket:BUCKET_NAME,
+            Key:name,
+            Body:data,
+            ACL:"public-read"
+        }
+    
+        return new Promise((resolve,reject)=>{
+            s2Bucket.upload(params,(err,response)=>{
+                if(err){
+                    reject(err)
+                }else{
+                    resolve (response.Location)
+                }
+            })
+        })
+    }catch(err){
+        return err
+    }
+    }
 
 module.exports = socketApp

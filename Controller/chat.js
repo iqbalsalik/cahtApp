@@ -1,6 +1,5 @@
 const path = require("path")
 
-const sequelize = require("../Utils/database");
 const Sequelize = require("sequelize");
 
 const Message = require("../Models/message");
@@ -31,6 +30,7 @@ exports.getAllMessages = async (req, res) => {
                     const userData = {
                         id: messages[i].id,
                         message: messages[i].message,
+                        fileUrl: messages[i].fileUrl,
                         name: userName
                     }
                     messageArray.push(userData)
