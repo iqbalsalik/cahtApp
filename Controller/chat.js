@@ -51,7 +51,7 @@ const today = new Date();
 today.setUTCHours(0, 0, 0, 0);
 
 var job = new CronJob(
-    '0 0 * * * *',
+    '0 0 * * *',
     async function () {
         const olderMessages = await Message.findAll({
             where: {
