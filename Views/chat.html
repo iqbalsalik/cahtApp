@@ -10,17 +10,27 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="Css/chat.css">
-     <!-- BOOTSTRAP ICON LIBRARY -->
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
-     <!-- Include the Socket.IO library -->
-<script defer src="http://localhost:5000/socket.io/socket.io.js"></script>
-<script defer src="chat.js"></script>
+    <!-- BOOTSTRAP ICON LIBRARY -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css">
+    <!-- GOOGLE FONT FAMILY -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto+Mono:wght@300&display=swap"
+        rel="stylesheet">
+    <!-- Include the Socket.IO library -->
+    <script defer src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <script defer src="chat.js"></script>
 
 </head>
 
 <body>
+    <div class="container" id="logoContainer">
+        <img src="logo/logo.png" id="logo" alt="logo">
+        <h3>Chat App</h3>
+    </div>
     <div class="container" id="rightSegment">
-        <button class="btn btn-primary my-3" id="createGroup">Create New Group</button>
+        <button class="btn btn-primary my-3 textSm" id="createGroup">Create New Group</button>
         <h4 id="groupMemberHeading">Group Members</h4>
         <hr id="lineRight">
         <ul class="list-group" id="memberList">
@@ -41,13 +51,13 @@
         <div id="messages"></div>
         <div class="text-center my-2">
             <input type="text" id="inputMessage" placeholder="Type Message">
-            <button class="allBtn" id="sendMessage">Send</button>
+            <button class="allBtn textSm" id="sendMessage">Send</button>
         </div>
         <div id="editMember"></div>
         <div id="app" class="text-center my-2">
             <input type="file" id="imageInput">
             <img id="selectedImage" src="#" alt="Selected Image" style="display: none;">
-            <button class="allBtn mt-2" id="sendImageBtn">Send Image</button>
+            <button class="allBtn mt-2 textSm" id="sendImageBtn">Send Image</button>
         </div>
     </div>
 

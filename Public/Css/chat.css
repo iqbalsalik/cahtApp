@@ -1,27 +1,49 @@
-body{
+body {
     background-color: #004a0252;
     margin: 0;
     padding: 0;
+    font-family: 'Playfair Display', serif;
+    font-family: 'Roboto Mono', monospace;
 }
-.container{
+
+.container {
     width: 45%;
 }
 
-#inputMessage{
-    background-color:#004a0252;
+#logo{
+    height: 3rem;
+    margin-right: 3px;
+}
+
+#logoContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+
+#inputMessage {
+    background-color: #004a0252;
     width: 70%;
     border: none;
     border-radius: 7px;
 }
 
-.allBtn{
+#chatContainer{
+    border: 2px solid white;
+    border-radius: 12px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.allBtn {
     border: none;
     border-radius: 20px;
     background-color: #20cd20;
     color: white;
 }
 
-#leftSegment{
+#leftSegment {
     position: absolute;
     top: 22%;
     left: 80%;
@@ -29,7 +51,7 @@ body{
     width: auto;
 }
 
-#rightSegment{
+#rightSegment {
     position: absolute;
     top: 3%;
     left: 1%;
@@ -37,7 +59,7 @@ body{
     width: auto;
 }
 
-#addMember{
+#addMember {
     font-size: larger;
     font-weight: bolder;
     border-radius: 65px;
@@ -45,42 +67,58 @@ body{
     margin-top: 10px;
 }
 
-.list-group-item{
+.list-group-item {
     background: none;
     border: none;
     cursor: pointer;
 }
 
-#editGroupContainer{
+#editGroupContainer {
     display: none;
 }
 
-@media (max-width: 670px) {
-    #createGroup{
+
+@media (max-width: 700px) {
+    #createGroup {
+        width: 34%;
+        text-wrap: wrap;
+        font-size: small;
+        width: 48%;
+    }
+
+    span{
+        font-size: small;
+    }
+
+    img{
+        max-width: 10rem;
+    }
+
+    p{
+        font-size: small;
+    }
+
+    #groupMemberHeading {
         width: 34%;
         text-wrap: wrap;
     }
 
-    #groupMemberHeading{
-        width: 34%;
-        text-wrap:wrap;
-    }
-
-    #memberList{
+    #memberList {
         width: 41%;
         text-wrap: wrap;
     }
 
-    #lineRight{
+    #lineRight {
         margin-right: 52%;
     }
 
-    #rightSegment{
+    #rightSegment {
         position: absolute;
         top: 0%;
         left: 1%;
         height: 100%;
         width: auto;
+        width: 9em;
     }
 
     #leftSegment {
@@ -91,33 +129,74 @@ body{
         width: auto;
         margin: 0;
     }
+
+    .textSm{
+        font-size: xx-small;
+        padding: 0;
+        margin: -4px;
+    }
+
+    h3{
+        font-size: small;
+        color: white;
+    }
+    
+    h4{
+        font-size: small;
+        color: white;
+    }
+    
+    #app{
+        font-size: small;
+    }
 }
 
-#imageInput{
+#imageInput {
     background-color: #004a0252;
     border-radius: 5px;
 }
 
-#selectedImage{
+#selectedImage {
     width: 15rem;
     margin: auto;
     margin-top: 10px;
 }
 
-#messages{
+#messages {
     max-height: 25rem;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 #messages::-webkit-scrollbar {
-    width: 10px; /* Width of the scrollbar */
-  }
+    width: 10px;
+}
 
 #messages::-webkit-scrollbar-thumb {
-    background-color: #888; /* Color of the thumb */
-    border-radius: 5px; /* Rounded corners for the thumb */
-  }
+    background-color: #888;
+    border-radius: 5px;
+}
+
 #messages::-webkit-scrollbar-track {
-    background-color: #f0f0f0; /* Color of the track */
-  }
+    background-color: #f0f0f0;
+}
+
+.textSm{
+    font-size: 15px;
+    padding: 0;
+    margin: -4px;
+}
+
+h3{
+    font-size: x-large;
+    color: white;
+}
+
+h4{
+    font-size: larger;
+    color: white;
+}
+
+#app{
+    font-size: small;
+}

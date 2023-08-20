@@ -26,9 +26,9 @@ async function getAllGroups(data) {
         listGroup.innerHTML = ''
         for (let j = 0; j < data.length; j++) {
             if (data[j].admin) {
-                listGroup.innerHTML += `<li class="list-group-item" id = "${data[j].group.id}" onclick="selectedGroup(${data[j].group.id},'${data[j].group.groupName}',event)">${data[j].group.groupName}  <button class="btn-sm btn-primary" onclick="deleteGroup(${data[j].group.id})">Delete</button>  <button class="btn-sm btn-primary" onclick="addMemberBtn(${data[j].group.id})"><i class="bi bi-plus"></i>  Member</button</li>`
+                listGroup.innerHTML += `<li class="list-group-item" id = "${data[j].group.id}" onclick="selectedGroup(${data[j].group.id},'${data[j].group.groupName}',event)">${data[j].group.groupName}  <button class="btn-sm btn-primary textSm" onclick="deleteGroup(${data[j].group.id})">Delete</button>  <button class="btn-sm btn-primary textSm" onclick="addMemberBtn(${data[j].group.id})"><i class="bi bi-plus"></i>  <i class="bi bi-person"></i></button</li>`
             } else {
-                listGroup.innerHTML += `<li class="list-group-item" id = "${data[j].group.id}" onclick="selectedGroup(${data[j].group.id},'${data[j].group.groupName}',event)">${data[j].group.groupName} <button class="btn-sm btn-primary" onclick="leaveGroup(${data[j].group.id})">Leave Group</button></li>`
+                listGroup.innerHTML += `<li class="list-group-item" id = "${data[j].group.id}" onclick="selectedGroup(${data[j].group.id},'${data[j].group.groupName}',event)">${data[j].group.groupName} <button class="btn-sm btn-primary textSm" onclick="leaveGroup(${data[j].group.id})">Leave Group</button></li>`
             }
         }
     } catch (err) {
@@ -73,7 +73,7 @@ function addMemberBtn(id) {
             </div>
 
             <!-- SUBMIT BUTTON-->
-            <button type="submit" class="btn btn-dark" onclick = "addMember(event,'${id}')">Add Member</button>
+            <button type="submit" class="btn btn-dark textSm" onclick = "addMember(event,'${id}')">Add Member</button>
     </form>`
     } catch (err) {
         console.log(err)
@@ -120,9 +120,9 @@ async function selectedGroup(id, name, e) {
             if (res.data.admin) {
                 for (let j = 0; j < res.data.userArray.length; j++) {
                     if (!res.data.userArray[j].isAdmin) {
-                        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.userArray[j].user.id},'${id}')">remove</button> <button class="btn-sm btn-primary" id="${res.data.userArray[j].user.id}${id}" onclick="makeAdmin(${res.data.userArray[j].user.id},'${id}')">Admin</button></li>`
+                        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary textSm" onclick="removeMember(${res.data.userArray[j].user.id},'${id}')"><i class="bi bi-x"></i></button> <button class="btn-sm btn-primary textSm" id="${res.data.userArray[j].user.id}${id}" onclick="makeAdmin(${res.data.userArray[j].user.id},'${id}')">Admin</button></li>`
                     } else {
-                        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.userArray[j].user.id})">remove</button>`
+                        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.userArray[j].user.id}">${res.data.userArray[j].user.name} <button class="btn-sm btn-primary textSm" onclick="removeMember(${res.data.userArray[j].user.id})"><i class="bi bi-x"></i></button>`
                     }
                 }
             } else {
@@ -141,7 +141,7 @@ async function selectedGroup(id, name, e) {
 
 function scrollToBottom() {
     messageContainer.scrollTop = messageContainer.scrollHeight;
-  }
+}
 
 function showMessagesOnScreen(id, name, message, fileUrl) {
     if (fileUrl) {
@@ -149,25 +149,25 @@ function showMessagesOnScreen(id, name, message, fileUrl) {
             messageContainer.innerHTML += `<div class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#d7ffd7; border-radius:23px;">
             <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">
             <span style="color: #39420c; font-weight: bold;">${name}:</span>
-            <img src="${fileUrl}" alt="Image" style = "width: 20rem; margin: 10px; border-radius: 21px;">
+            <img src="${fileUrl}" alt="Image"  style = "width: 20rem; margin: 10px; border-radius: 21px;">
             </div>
             </div>`
         } else {
             messageContainer.innerHTML += `<div class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#e3e1e1; border-radius:23px;">
             <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">
              <span style="color: #39420c; font-weight: bold;">${name}:</span>
-            <img src="${fileUrl}" alt="Image" style = "width: 20rem; margin: 10px; border-radius: 21px;">
+            <img src="${fileUrl}" alt="Image"  style = "width: 20rem; margin: 10px; border-radius: 21px;">
             </div>
             </div>`
         }
     } else {
         if (i % 2 === 0) {
             messageContainer.innerHTML += `<div id= ${id} class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#d7ffd7; border-radius:23px;">
-                            <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">  <span style="color: #39420c; font-weight: bold;">${name}:</span>  ${message} </div>
+                            <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;">  <span style="color: #39420c; font-weight: bold;">${name}:</span> <p> ${message}</p> </div>
                         </div>`
         } else {
             messageContainer.innerHTML += `<div id= ${id} class="row text-break d-flex flex-column align-items-start" style = "width:100%; margin-left:2px; background-color:#e3e1e1; border-radius:23px;">
-                        <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;"> <span style="color: #39420c; font-weight: bold;">${name}:</span>  ${message}</div>
+                        <div class="col-auto mr-auto d-flex" style="font-size: larger; color: black;"> <span style="color: #39420c; font-weight: bold;">${name}:</span>  <p> ${message}</p></div>
                     </div>`
         }
     }
@@ -233,7 +233,7 @@ async function addMember(e, id) {
         })
         alert(res.data.message)
         editMember.innerHTML = "";
-        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.id}">${res.data.name} <button class="btn-sm btn-primary" onclick="removeMember(${res.data.id})">remove</button> <button class="btn-sm btn-primary" id="${res.data.id}${id}" onclick="makeAdmin(${res.data.id},'${id}')">Admin</button></li>`
+        memeberList.innerHTML += `<li class="list-group-item"  id="${res.data.id}">${res.data.name} <button class="btn-sm btn-primary textSm" onclick="removeMember(${res.data.id})"><i class="bi bi-x"></i></button> <button class="btn-sm btn-primary textSm" id="${res.data.id}${id}" onclick="makeAdmin(${res.data.id},'${id}')">Admin</button></li>`
     } catch (err) {
         alert(err.response.data)
     }
